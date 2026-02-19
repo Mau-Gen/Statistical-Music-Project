@@ -2,6 +2,8 @@ CREATE DATABASE music_stats;
 
 USE music_stats;
 
+SHOW TABLES;
+
 CREATE TABLE artists (
 	id INTEGER AUTO_INCREMENT NOT NULL,
     artist_name VARCHAR(64),
@@ -75,3 +77,5 @@ CREATE TABLE listening_data (
 );
 
 SHOW TABLES;
+
+SELECT * FROM listening_data;
