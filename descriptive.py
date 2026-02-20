@@ -51,4 +51,4 @@ def genre_popularity(conn):
 #print(df)
 #duration = df["listened_at"]
 
-#print(f"Average listening time", ((duration.mean()) / 60))                       
+#print(f"Average listening time", ((duration.mean()) / 60))

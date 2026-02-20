@@ -76,6 +76,28 @@ CREATE TABLE listening_data (
     FOREIGN KEY (song_id) REFERENCES songs(id)
 );
 
+
+
 SHOW TABLES;
 
 SELECT * FROM listening_data;
+
+SELECT * FROM songs;
+
+ALTER TABLE songs ADD COLUMN duration INT;
+
+UPDATE songs s
+JOIN (
+    -- Vi hittar max-lyssningen men lägger till en betydligt större 
+    -- och mer varierad slumpmässig tid (mellan 10 och 120 sekunder)
+    SELECT 
+        s.id, 
+        COALESCE(MAX(l.duration), 180) + FLOOR(10 + (RAND() * 110)) AS random_duration
+    FROM songs s
+    LEFT JOIN listening_data l ON s.id = l.song_id
+    GROUP BY s.id
+) AS calculated_data ON s.id = calculated_data.id
+SET s.duration = calculated_data.random_duration;
+
+SELECT duration FROM listening_data
+WHERE listening_data.song_id = 2;

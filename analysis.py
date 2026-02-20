@@ -15,3 +15,9 @@ conn = mysql.connector.connect(
 
 df = pd.read_sql("SELECT * FROM users", conn)
 print(df)
+
+listening_data  = pd.read_sql("SELECT duration FROM listening_data", conn)
+print(listening_data)
+
+song_duration =  pd.read_sql("SELECT duration FROM songs", conn)
+print(song_duration)
