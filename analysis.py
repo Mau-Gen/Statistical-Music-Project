@@ -19,5 +19,5 @@ print(df)
 listening_data  = pd.read_sql("SELECT duration FROM listening_data", conn)
 print(listening_data)
 
-song_duration =  pd.read_sql("SELECT duration FROM songs", conn)
+song_duration =  pd.read_sql("SELECT songs.id FROM songs JOIN listening_data ON songs.id = listening_data.song_id WHERE songs.duration = listening_data.duration", conn)
 print(song_duration)

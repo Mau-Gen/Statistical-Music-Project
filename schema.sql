@@ -92,7 +92,7 @@ JOIN (
     -- och mer varierad slumpmässig tid (mellan 10 och 120 sekunder)
     SELECT 
         s.id, 
-        COALESCE(MAX(l.duration), 180) + FLOOR(10 + (RAND() * 110)) AS random_duration
+        COALESCE(MAX(l.duration), 180) + FLOOR((RAND() * 110)) AS random_duration
     FROM songs s
     LEFT JOIN listening_data l ON s.id = l.song_id
     GROUP BY s.id
