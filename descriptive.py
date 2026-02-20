@@ -79,7 +79,7 @@ def user_total_listened_time(conn):
     print(total_time)
 
 def userinformation(conn):
-    id = int(input("Which user id from 1-1000 do you want to view?"))
+    id = int(input("Which user id from 1-1000 do you want to view? "))
     user = pd.read_sql("""
                     SELECT
                        *
@@ -87,4 +87,33 @@ def userinformation(conn):
                     WHERE users.id = %s
                         """, conn, params=(id,))
     print(user)
+
+
+def create_user(conn):
+    name = str(input("What username would you like to have? "))
+    sub = int(input("What subscription would you like to have?\n1. free\n2. premium\n3. family\n"))
+    sub_type = ""
+    if sub == 1:
+        sub_type = "free"
+    elif sub == 2:
+        sub_type = "premium"
+    else:
+        sub_type = "family"
+
+    cursor = conn.cursor()
     
+
+    try:
+        args = (name, sub_type)
+
+        cursor.callproc('CreateAUser', args)
+
+        conn.commit()
+
+        print(f"User {name} created succesfully!")
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        conn.rollback()
+
+    finally:
+        cursor.close()

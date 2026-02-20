@@ -18,12 +18,11 @@ def connect():
 
     return conn
 
-
 def main():
     conn = connect() # Connect to database
     user_input = 0
     while True:
-        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n9) Exit")
+        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n5) Create a new user\n9) Exit")
         user_input = int(input())
         if user_input == 1:
             genre_popularity(conn=conn)
@@ -36,6 +35,9 @@ def main():
 
         elif user_input == 4:
             userinformation(conn=conn)
+
+        elif user_input == 5:
+            create_user(conn=conn)
         
         elif user_input == 9:
             exit()
