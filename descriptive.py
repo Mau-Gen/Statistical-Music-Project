@@ -52,3 +52,39 @@ def genre_popularity(conn):
 #duration = df["listened_at"]
 
 #print(f"Average listening time", ((duration.mean()) / 60))
+
+def times_fully_listened(conn):
+    amount_songs = pd.read_sql("""
+                    SELECT
+                        songs.song_name,
+                        COUNT(*) AS times
+                    FROM songs
+                    JOIN listening_data ld ON ld.song_id = songs.id
+                    WHERE ld.duration = songs.duration
+                    GROUP BY songs.song_name
+                    ORDER BY amount DESC""", conn)
+    print(amount_songs)
+
+
+def user_total_listened_time(conn):
+    total_time = pd.read_sql("""
+                        SELECT
+                            users.username,
+                            SUM(ld.duration) AS total_time,
+                            users.subscription
+                        FROM users
+                        JOIN listening_data ld ON users.id = ld.user_id
+                        GROUP BY users.username, users.subscription
+                        ORDER BY total_time""", conn)
+    print(total_time)
+
+def userinformation(conn):
+    id = int(input("Which user id from 1-1000 do you want to view?"))
+    user = pd.read_sql("""
+                    SELECT
+                       *
+                    FROM users
+                    WHERE users.id = %s
+                        """, conn, params=(id,))
+    print(user)
+    
