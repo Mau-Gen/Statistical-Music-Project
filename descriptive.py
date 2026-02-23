@@ -32,11 +32,14 @@ def genre_popularity(conn):
     genres_label = popular_genres["genre_name"]
     listening_time = popular_genres["total_listens"]
 
-    plt.barh(genres_label, listening_time)
-    plt.title('Genre popularity')
-    plt.xlabel('Amount of listening time')
-    plt.ylabel('Genres')
-    plt.show()
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    ax.barh(genres_label, listening_time)
+    ax.set_title("Genre popularity")
+    ax.set_xlabel("Amount of listening time")
+    ax.set_ylabel("Genres")
+
+    return fig
 
 
 
@@ -65,8 +68,13 @@ def times_fully_listened(conn):
                     JOIN listening_data ld ON ld.song_id = songs.id
                     WHERE ld.duration = songs.duration
                     GROUP BY songs.song_name
-                    ORDER BY amount DESC""", conn)
-    print(amount_songs)
+                    ORDER BY times DESC LIMIT 10""", conn)
+    
+    fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
+    ax.bar(amount_songs["song_name"], amount_songs["times"], color="green")
+    ax.set_title("Top 10 Fully Listened Songs")
+    plt.xticks(rotation=45, ha="right")
+    return fig
 
 
 def user_total_listened_time(conn):
@@ -78,59 +86,34 @@ def user_total_listened_time(conn):
                         FROM users
                         JOIN listening_data ld ON users.id = ld.user_id
                         GROUP BY users.username, users.subscription
-                        ORDER BY total_time""", conn)
-    print(total_time)
+                        ORDER BY total_time DESC LIMIT 15""", conn)
+    
+    fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
+    ax.pie(total_time["total_time"], labels=total_time["username"], autopct="%1.1f%%")
+    ax.set_title("Top 15 Users In Total Listening Time")
+    return fig
 
-def userinformation(conn):
-    while True:
-        try:
-            stats = pd.read_sql("""
+def get_users_stats(conn):
+    stats = pd.read_sql("""
                             SELECT 
                                 COUNT(*) as total, MAX(id) as max_id
                             FROM users
                             """, conn)
 
-            exact_total = stats.iloc[0]['total']
-            max_id = stats.iloc[0]['max_id']
+    exact_total = stats.iloc[0]['total']
+    max_id = stats.iloc[0]['max_id']
+    return exact_total, max_id
 
-            print(f"\n--- USER INFORMATION (Total users: {exact_total}) ---")
+def get_user_info(conn, user_id):
+    user = pd.read_sql("""
+                    SELECT
+                       *
+                    FROM users
+                    WHERE users.id = %s
+                    """, conn, params=(user_id,))
+    return user
 
-            check = input("Would you like to create a new user or view information about a user?\n1) View information\n2) Create a user\n3) Exit\n")
-
-            if check == '1':
-                id = int(input(f"Which user id from 1-{max_id} do you want to view? "))
-                user = pd.read_sql("""
-                                SELECT
-                                   *
-                                FROM users
-                                WHERE users.id = %s
-                                    """, conn, params=(id,))
-                if user.empty:
-                    print(f"No user found with ID {id}")
-                else:
-                    print(user)
-
-            elif check == '2':
-                create_a_user(conn=conn)
-
-            elif check == '3':
-                print("Exiting to main menu...")
-                break
-
-            else:
-                print("Invalid selection, try again.")
-        
-        except ValueError:
-            print("Please enter a valid number.")
-
-        except Exception as e:
-            print(f"An error occured: {e}")
-            break
-    
-
-def create_a_user(conn):
-    name = str(input("What username would you like to have? "))
-    sub_type = str(input("What subscription would you like to have?\n1) free\n2) premium\n3) family\n"))
+def create_a_user_gui(conn, name, sub_type):
 
     cursor = conn.cursor()
 
@@ -142,10 +125,11 @@ def create_a_user(conn):
         conn.commit()
 
         print(f"User {name} created successfully!")
+        return True, f"User {name} created!"
 
     except Exception as e:
-        print(f"Something went wrong: {e}")
         conn.rollback()
+        return False, str(e)
 
     finally:
         cursor.close()
