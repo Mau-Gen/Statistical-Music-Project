@@ -29,4 +29,6 @@ def hypothesis_test(conn):
 
     print(free_duration)
 
+    
+
     #premium_duration = pd.read_sql("""SELECT user_id, SUM(duration) AS duration_week""", conn)
