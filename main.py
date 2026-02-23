@@ -24,11 +24,7 @@ def main():
     conn = connect() # Connect to database
     user_input = 0
     while True:
-<<<<<<< Updated upstream
         print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n5) Behavior analysis\n6) Hypothesis test\n9) Exit")
-=======
-        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n9) Exit")
->>>>>>> Stashed changes
         user_input = int(input())
         if user_input == 1:
             genre_popularity(conn=conn)

@@ -4,3 +4,4 @@ __pycache__/descriptive.cpython-312.pyc
 __pycache__/clustering.cpython-312.pyc
 __pycache__/descriptive.cpython-312.pyc
 __pycache__/hypothesis.cpython-312.pyc
+*.pyc

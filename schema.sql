@@ -101,3 +101,7 @@ SET s.duration = calculated_data.random_duration;
 
 SELECT duration FROM listening_data
 WHERE listening_data.song_id = 2;
+
+DROP TABLE listening_data;
+
+SELECT * FROM listening_data;
