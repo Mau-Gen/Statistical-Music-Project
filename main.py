@@ -24,8 +24,7 @@ def main():
     conn = connect() # Connect to database
     user_input = 0
     while True:
-<<<<<<< Updated upstream
-        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n9) Exit")
+        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Fully listened songs\n3) Total user listening time\n4) User-specific information\n5) Behavior analysis\n6) Hypothesis test\n9) Exit")
         user_input = int(input())
         if user_input == 1:
             genre_popularity(conn=conn)
@@ -44,26 +43,16 @@ def main():
 
         elif user_input == 6:
             hypothesis_test(conn=conn)
-        else:
-            exit()
         
-=======
-        print("Tool for analysing Spotify-data\n1) Genre popularity\n2) Behavior analysis\n3) Hypothesis\n9) Exit")
-        user_input = int(input())
-        if user_input == 1:
-            genre_popularity(conn=conn)
-        elif user_input == 2:
-            behavior_analysis(conn=conn)
-        elif user_input == 3:
-            hypothess_test(conn=conn)
->>>>>>> Stashed changes
         elif user_input == 9:
-            exit()
+            print("Closing connection and exiting...")
+            break
 
         else:
-            pass
+            print("option not available, try again.")
             
-
+    if conn.is_connected():
+        conn.close()
 
 if __name__ == "__main__":
     main()

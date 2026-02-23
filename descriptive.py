@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+
+warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
 #from sklearn import KMeans ?
 
@@ -79,12 +82,70 @@ def user_total_listened_time(conn):
     print(total_time)
 
 def userinformation(conn):
-    id = int(input("Which user id from 1-1000 do you want to view?"))
-    user = pd.read_sql("""
-                    SELECT
-                       *
-                    FROM users
-                    WHERE users.id = %s
-                        """, conn, params=(id,))
-    print(user)
+    while True:
+        try:
+            stats = pd.read_sql("""
+                            SELECT 
+                                COUNT(*) as total, MAX(id) as max_id
+                            FROM users
+                            """, conn)
+
+            exact_total = stats.iloc[0]['total']
+            max_id = stats.iloc[0]['max_id']
+
+            print(f"\n--- USER INFORMATION (Total users: {exact_total}) ---")
+
+            check = input("Would you like to create a new user or view information about a user?\n1) View information\n2) Create a user\n3) Exit\n")
+
+            if check == '1':
+                id = int(input(f"Which user id from 1-{max_id} do you want to view? "))
+                user = pd.read_sql("""
+                                SELECT
+                                   *
+                                FROM users
+                                WHERE users.id = %s
+                                    """, conn, params=(id,))
+                if user.empty:
+                    print(f"No user found with ID {id}")
+                else:
+                    print(user)
+
+            elif check == '2':
+                create_a_user(conn=conn)
+
+            elif check == '3':
+                print("Exiting to main menu...")
+                break
+
+            else:
+                print("Invalid selection, try again.")
+        
+        except ValueError:
+            print("Please enter a valid number.")
+
+        except Exception as e:
+            print(f"An error occured: {e}")
+            break
     
+
+def create_a_user(conn):
+    name = str(input("What username would you like to have? "))
+    sub_type = str(input("What subscription would you like to have?\n1) free\n2) premium\n3) family\n"))
+
+    cursor = conn.cursor()
+
+    try:
+        args = (name, sub_type)
+
+        cursor.callproc("CreateAUser", args)
+
+        conn.commit()
+
+        print(f"User {name} created successfully!")
+
+    except Exception as e:
+        print(f"Something went wrong: {e}")
+        conn.rollback()
+
+    finally:
+        cursor.close()
