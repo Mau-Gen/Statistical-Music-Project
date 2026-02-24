@@ -51,6 +51,15 @@ class App(ctk.CTk):
         self.btn_user = ctk.CTkButton(self.sidebar, text="User Management", command=self.show_user_management_view)
         self.btn_user.pack(pady=10, padx=10)
 
+        # Button for top 15 users
+        self.btn_top_15 = ctk.CTkButton(self.sidebar, text="Top 15 Users", command=self.show_top_15_users)
+        self.btn_top_15.pack(pady=10, padx=10)
+
+        # Button for the top 10 songs this month
+
+        self.btn_top_10 = ctk.CTkButton(self.sidebar, text="Top 10 Songs", command=self.show_top_10_songs)
+        self.btn_top_10.pack(pady=10, padx=10)
+
         self.container_frame = ctk.CTkFrame(self)
         self.container_frame.grid(row = 0, column=1, padx=20, pady=20, sticky="nsew")
 
@@ -59,6 +68,18 @@ class App(ctk.CTk):
     def show_genre_graph(self):
 
         fig = genre_popularity(self.conn)
+
+        self.draw_figure(fig)
+
+    def show_top_15_users(self):
+
+        fig = user_total_listened_time(self.conn)
+
+        self.draw_figure(fig)
+
+    def show_top_10_songs(self):
+
+        fig = top_10_songs_this_month(self.conn)
 
         self.draw_figure(fig)
 

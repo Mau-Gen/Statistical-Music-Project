@@ -6,6 +6,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+from matplotlib import ticker
 
 warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
@@ -59,20 +60,32 @@ def genre_popularity(conn):
 
 #print(f"Average listening time", ((duration.mean()) / 60))
 
-def times_fully_listened(conn):
+def top_10_songs_this_month(conn):
     amount_songs = pd.read_sql("""
                     SELECT
                         songs.song_name,
-                        COUNT(*) AS times
+                        monthly_listeners AS times
                     FROM songs
-                    JOIN listening_data ld ON ld.song_id = songs.id
-                    WHERE ld.duration = songs.duration
-                    GROUP BY songs.song_name
                     ORDER BY times DESC LIMIT 10""", conn)
     
+    print(amount_songs)
+
     fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
-    ax.bar(amount_songs["song_name"], amount_songs["times"], color="green")
-    ax.set_title("Top 10 Fully Listened Songs")
+    bars = ax.bar(amount_songs["song_name"], amount_songs["times"], color="green")
+    ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
+    ax.yaxis.get_major_formatter().set_scientific(False)
+
+    min_val = amount_songs["times"].min()
+    max_val = amount_songs["times"].max()
+
+    diff = max_val - min_val
+
+    padding = diff * 0.15 if diff > 0 else min_val * 0.001
+
+    ax.set_ylim(bottom= min_val - padding, top = max_val + padding)
+    ax.bar_label(bars, fmt="{:,.0f}", padding=3)
+
+    ax.set_title("Top 10 Songs With Most Monthly Listeners")
     plt.xticks(rotation=45, ha="right")
     return fig
 
