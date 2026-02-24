@@ -111,16 +111,16 @@ def behavior_analysis_3d(conn):
 
     # -------- 3D PCA --------
 
-    feature1 = pd.read_sql("SELECT user_id, SUM(duration) AS total_listened FROM listening_data GROUP by user_id", conn)
+    feature1 = pd.read_sql("SELECT user_id, SUM(duration) AS total_listened FROM listening_data GROUP BY user_id", conn)
     
-    feature2 = pd.read_sql("SELECT user_id, COUNT(DISTINCT song_id) AS unique_songs FROM listening_data GROUP by user_id", conn)
+    feature2 = pd.read_sql("SELECT user_id, COUNT(DISTINCT song_id) AS unique_songs FROM listening_data GROUP BY user_id", conn)
     
     feature3 = pd.read_sql("""SELECT user_id, COUNT(DISTINCT genre_id) AS unique_genre
                             FROM listening_data ld
                             JOIN songs ON songs.id = ld.song_id
                             JOIN artist_genre ag ON ag.artist_id = songs.artist_id
                             JOIN genre ON genre.id = ag.genre_id
-                            GROUP by user_id""", conn)
+                            GROUP BY user_id""", conn)
 
     feature4 = pd.read_sql("""
                             SELECT user_id,
