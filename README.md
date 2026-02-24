@@ -9,7 +9,7 @@ It includes such as behavior analysis, track and artists popularity, trends and 
 ### Prerequisites
 - MySQL 8.0+
 - MySQL Workbench (For GUI managment)
-- Python 3.10+
+- Python 3.9+
 - Required Python packages
 
 
