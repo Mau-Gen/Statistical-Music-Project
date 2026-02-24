@@ -1,11 +1,11 @@
 import datetime
 import mysql.connector
 import pandas as pd
-from dotenv import load_dotenv
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
+from dotenv import load_dotenv
 from matplotlib import ticker
 
 warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
