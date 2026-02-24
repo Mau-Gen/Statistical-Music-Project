@@ -135,14 +135,22 @@ def create_a_user_gui(conn, name, sub_type):
 
         cursor.callproc("CreateAUser", args)
 
-        conn.commit()
+        result_msg = "Failed"
+        for  result in cursor.stored_results():
+            row = result.fetchone()
+            if row:
+                result_msg = row[0]
 
-        print(f"User {name} created successfully!")
-        return True, f"User {name} created!"
+        if result_msg == 'Completed':
+            conn.commit()
+            return True, f"User {name} created successfully!"
+        
+        else:
+            return False, f"Error: Username '{name}' already exists."
 
     except Exception as e:
         conn.rollback()
-        return False, str(e)
+        return False, f"Database error: {str(e)}"
 
     finally:
         cursor.close()
