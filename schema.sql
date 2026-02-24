@@ -105,3 +105,30 @@ WHERE listening_data.song_id = 2;
 DROP TABLE listening_data;
 
 SELECT * FROM listening_data;
+
+DELIMITER $$
+
+CREATE PROCEDURE CreateAUser(uname VARCHAR(64), sub_type VARCHAR(64))
+DETERMINISTIC
+BEGIN
+
+	DECLARE FreeUser TINYINT;
+    
+    SELECT COUNT(*) INTO FreeUser
+    FROM users
+    WHERE uname = users.username;
+    
+    IF FreeUser = 0 THEN
+		INSERT INTO users(username, subscription)
+		VALUES (uname, sub_type);
+        
+        SELECT 'Completed' AS result;
+        
+	ELSE
+		SELECT 'Failed' AS result;
+        
+	END IF;
+END $$
+
+DELIMITER ;
+
