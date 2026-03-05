@@ -64,11 +64,15 @@ class App(ctk.CTk):
         self.btn_top_10 = ctk.CTkButton(self.sidebar, text="Top 10 Songs", command=self.show_top_10_songs)
         self.btn_top_10.pack(pady=10, padx=10)
 
+        # Button for the top 5 songs for a specific month and year
+
+        self.btn_specific_top_5 = ctk.CTkButton(self.sidebar, text="Specific Top 5 Songs", command=self.show_top_5_specific_songs)
+        self.btn_specific_top_5.pack(pady=10, padx=10)
+
         self.container_frame = ctk.CTkFrame(self)
         self.container_frame.grid(row = 0, column=1, padx=20, pady=20, sticky="nsew")
 
         self.current_canvas = None
-
     def show_genre_graph(self):
 
         fig = genre_popularity(self.conn)
@@ -148,6 +152,45 @@ class App(ctk.CTk):
         fig = behavior_analysis_3d(self.conn)
 
         self.draw_figure(fig)
+
+    def show_top_5_specific_songs(self):
+
+        for widget in self.container_frame.winfo_children():
+            widget.destroy()
+
+        ctk.CTkLabel(self.container_frame, text="Top 5 Songs by Date", font=("Arial", 24)).pack(pady=10)
+
+        input_frame = ctk.CTkFrame(self.container_frame)
+        input_frame.pack(pady=10, padx=20, fill="x")
+
+        self.month_entry = ctk.CTkEntry(input_frame, placeholder_text="Month (e.g., 10)")
+        self.month_entry.pack(side="left", padx=10, pady=10)
+
+        self.year_entry = ctk.CTkEntry(input_frame, placeholder_text="Year (e.g., 2023)")
+        self.year_entry.pack(side="left", padx=10, pady=10)
+
+        ctk.CTkButton(input_frame, text="Show Graph", command=self.handle_specific_top_5_graph).pack(side="left", padx=10)
+
+        self.plot_frame = ctk.CTkFrame(self.container_frame)
+        self.plot_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+    def handle_specific_top_5_graph(self):
+        try:
+            month = int(self.month_entry.get())
+            year = int(self.year_entry.get())
+
+            args = (year, month) 
+
+            fig = top_5_songs_specific(self.conn, args)
+
+            for widget in self.plot_frame.winfo_children():
+                widget.destroy()
+
+            self.current_canvas = FigureCanvasTkAgg(fig, master=self.plot_frame)
+            self.current_canvas.draw()
+            self.current_canvas.get_tk_widget().pack(fill="both", expand=True)
+        except ValueError:
+            print("Please enter valid numbers for month and year.")
 
     def show_hypothesis(self):
         

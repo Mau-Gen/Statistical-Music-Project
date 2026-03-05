@@ -85,7 +85,6 @@ def top_10_songs_this_month(conn):
     plt.xticks(rotation=45, ha="right")
     return fig
 
-
 def user_total_listened_time(conn):
     total_time = pd.read_sql("""
                         SELECT
@@ -150,3 +149,29 @@ def create_a_user_gui(conn, name, sub_type):
 
     finally:
         cursor.close()
+
+def top_5_songs_specific(conn, args):
+
+    cursor = conn.cursor()
+
+    cursor.callproc("GetMonthlyStats", args)
+
+    rows = []
+    for result in cursor.stored_results():
+        rows = result.fetchall()
+        break
+
+    if not rows:
+        fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
+        ax.text(0.5, 0.5, "No data found for this date.", ha='center', va='center', fontsize=14)
+        cursor.close()
+        return fig
+
+    df = pd.DataFrame(rows, columns=["song_name", "amount"])
+
+    fig, ax = plt.subplots(figsize=(8, 6), tight_layout=True)
+    ax.bar(df["song_name"], df["amount"], color='skyblue')
+    plt.xticks(rotation=45, ha="right")
+    
+    cursor.close()
+    return fig

@@ -136,20 +136,24 @@ DELIMITER ;
 DELIMITER //
 -- Get Top 5 songs with given year and month
 CREATE PROCEDURE GetMonthlyStats(
-    IN p_year DATE,
-    IN p_month DATE
+    IN p_year INT,
+    IN p_month INT
 )
 BEGIN 
     -- Result 1 - Top 5 songs
-    SELECT s.song_name, COUNT(ld.listened_at) FROM listening_data ld
-    JOIN songs s ON s.song_id = ld.song_id
+    SELECT s.song_name, COUNT(ld.listened_at) AS amount FROM listening_data ld
+    JOIN songs s ON s.id = ld.song_id
     WHERE YEAR(ld.listened_at) = p_year
     AND 
-    WHERE MONTH(ld.listneed_at) = p_month
+    MONTH(ld.listened_at) = p_month
     GROUP BY s.song_name
-    ORDER BY ld.listened_at DESC;
+    ORDER BY amount DESC
     LIMIT 5;
 
-
+END //
 
 DELIMITER ;
+
+DROP PROCEDURE GetMonthlyStats;
+
+
