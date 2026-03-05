@@ -1,18 +1,14 @@
 import datetime
 import mysql.connector
 import pandas as pd
-from dotenv import load_dotenv
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
-
+from dotenv import load_dotenv
 from mpl_toolkits.mplot3d import Axes3D
-
-#from sklearn import KMeans
-
 """ Features vector = x(user) = [ total_minutes   ] - Sum of duration
                                 [  unique_songs   ] - Absolute amount of song_id
                                 [ unique_genres   ] - Absolute amount of genre_id
@@ -22,10 +18,6 @@ from mpl_toolkits.mplot3d import Axes3D
 Dim = X -> R^(n*5)
 
 """     
-
-
-
-
 def behavior_analysis(conn):
     feature1 = pd.read_sql("SELECT user_id, SUM(duration) AS total_listened FROM listening_data GROUP by user_id", conn)
     
@@ -66,13 +58,10 @@ def behavior_analysis(conn):
     kmeans = KMeans(n_clusters=amount_cluster, random_state=42)
     labels = kmeans.fit_predict(x_scaled)
 
-    
-
     df_analysis = x.copy()
     df_analysis["cluster"] = labels
 
     print(df_analysis.groupby("cluster").mean())
-
     
     fig2d, ax2d = plt.subplots(figsize=(8,6))
 
@@ -80,14 +69,25 @@ def behavior_analysis(conn):
 
     X_pca = pca.fit_transform(x_scaled)
 
-    
-
     for c in range(amount_cluster):
         plt.scatter(
             X_pca[labels == c, 0],
             X_pca[labels == c, 1],
             label=f"Cluster {c}"
         )
+
+    # Centroids
+    centroids = kmeans.cluster_centers_
+    centroids_pca = pca.transform(centroids)
+
+    plt.scatter(
+        centroids_pca[:, 0],
+        centroids_pca[:, 1],
+        s=100,
+        c="black",
+        marker="X",
+        label="Centroids"
+    )
 
     print(x.corr())
 
@@ -106,21 +106,20 @@ def behavior_analysis(conn):
 
     return fig2d
 
-
 def behavior_analysis_3d(conn):
 
     # -------- 3D PCA --------
 
-    feature1 = pd.read_sql("SELECT user_id, SUM(duration) AS total_listened FROM listening_data GROUP BY user_id", conn)
+    feature1 = pd.read_sql("SELECT user_id, SUM(duration) AS total_listened FROM listening_data GROUP by user_id", conn)
     
-    feature2 = pd.read_sql("SELECT user_id, COUNT(DISTINCT song_id) AS unique_songs FROM listening_data GROUP BY user_id", conn)
+    feature2 = pd.read_sql("SELECT user_id, COUNT(DISTINCT song_id) AS unique_songs FROM listening_data GROUP by user_id", conn)
     
     feature3 = pd.read_sql("""SELECT user_id, COUNT(DISTINCT genre_id) AS unique_genre
                             FROM listening_data ld
                             JOIN songs ON songs.id = ld.song_id
                             JOIN artist_genre ag ON ag.artist_id = songs.artist_id
                             JOIN genre ON genre.id = ag.genre_id
-                            GROUP BY user_id""", conn)
+                            GROUP by user_id""", conn)
 
     feature4 = pd.read_sql("""
                             SELECT user_id,

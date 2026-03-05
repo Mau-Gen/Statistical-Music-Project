@@ -47,6 +47,10 @@ class App(ctk.CTk):
         self.btn_clustering_3d = ctk.CTkButton(self.sidebar, text="Clustering in 3D", command=self.show_clustering_3d)
         self.btn_clustering_3d.pack(pady=10, padx=10)
 
+        # Button for hypothesis test 
+        self.btn_hypothesis = ctk.CTkButton(self.sidebar, text="Hypothesis", command=self.show_hypothesis)
+        self.btn_hypothesis.pack(pady=10, padx=10)
+
         # Button for user information
         self.btn_user = ctk.CTkButton(self.sidebar, text="User Management", command=self.show_user_management_view)
         self.btn_user.pack(pady=10, padx=10)
@@ -145,6 +149,11 @@ class App(ctk.CTk):
 
         self.draw_figure(fig)
 
+    def show_hypothesis(self):
+        
+        fig = hypothesis_test(self.conn)
+
+        self.draw_figure(fig)
 
 
     def draw_figure(self, fig):

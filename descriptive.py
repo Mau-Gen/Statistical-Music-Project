@@ -10,10 +10,6 @@ from matplotlib import ticker
 
 warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
-#from sklearn import KMeans ?
-
-
-
 # Bar chart for popularity of genres by listening time (Descending order)
 def genre_popularity(conn):
 
